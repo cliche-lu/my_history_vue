@@ -65,6 +65,7 @@
   import { addBusinessList } from '../api/home';
   // import { fileUpload } from '../api/home';
   import { getUserList } from '../api/home';
+  import { upLoadURL} from '../utils/api/request';
   
   export default {
     data() {
@@ -94,6 +95,7 @@ formLabelWidth: '120px',
           ],
           // fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
           fileList: [],
+          upLoadURL: upLoadURL,
       }
     },
     name: 'addHistory',
@@ -125,10 +127,12 @@ formLabelWidth: '120px',
           return;
         }
         try {
+          const s = [];
           this.fileList.forEach(item => {
             console.log(item);
-            this.form.imag = item.url;
+            s.push(item.url);
           });
+          this.form.imag = s.join(',');
           this.form.share = this.form.shareList.join(',');
           console.log("this.form",this.form);
           const response = await addBusinessList(this.form);
@@ -182,8 +186,13 @@ formLabelWidth: '120px',
         return this.$confirm(`确定移除 ${ file.name }？`);
       },
       handleSuccess(response, file, fileList) {
-      console.log("666666666666666",response,file,fileList); // 后端返回的数据
-      // this.fileList.push(response); // 将后端返回的数据添加到 fileList 中
+      // console.log("666666666666666",response,file,fileList); // 后端返回的数据
+      fileList.forEach(item => {
+        console.log(item);
+        let obj = {name: file.name, url: response.data};
+        this.fileList.push(obj);
+      });
+      // console.log("7777777777777",this.fileList); // 后端返回的数据
     },
       
     }

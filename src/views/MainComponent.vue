@@ -99,7 +99,13 @@
       width="100">
       <template slot-scope="scope">
         <i class="el-icon-picture-outline"></i>
-        <span style="margin-left: 10%">{{ scope.row.imag }}</span>
+        <!-- <span style="margin-left: 10%">{{ scope.row.imag }}</span> -->
+        <el-image 
+    style="width: 100px; height: 100px"
+    :src="scope.row.imag" 
+    :preview-src-list="scope.row.srcList">
+    </el-image>
+
       </template>
     </el-table-column>
     <el-table-column
@@ -252,9 +258,32 @@ Powered by  <a href="https://github.com/cliche-lu/new-test.git">cliche-lu</a>
     <el-form-item label="活动名称" :label-width="formLabelWidth">
       <el-input v-model="form.remark" autocomplete="off"></el-input>
     </el-form-item>
-    <el-form-item label="图片" :label-width="formLabelWidth">
-      <el-input v-model="form.imag" autocomplete="off"></el-input>
-    </el-form-item>
+    <!-- <el-form-item label="图片" :label-width="formLabelWidth">
+      <el-input v-model="form.imag" autocomplete="off">
+      </el-input>
+     
+    </el-form-item> -->
+
+    
+    <el-form-item label="图片">
+    <el-upload
+  class="upload-demo"
+  action="http://localhost:9999/file/upload"
+  :on-preview="handlePreview"
+  :on-remove="handleRemove"
+  :before-remove="beforeRemove"
+  :on-success="handleSuccess"
+  :on-error="handleError"
+  multiple
+  :limit="9"
+  :on-exceed="handleExceed"
+  :file-list="fileList">
+  <el-button size="small" type="primary">点击上传</el-button>
+  <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+  <el-input v-model="form.imag" disabled></el-input>
+</el-upload>
+
+  </el-form-item>
     <el-form-item label="地址" :label-width="formLabelWidth">
       <el-input v-model="form.address" autocomplete="off"></el-input>
     </el-form-item>
@@ -321,6 +350,8 @@ export default {
   data() {
     return {
       tableData: [],
+      url: 'http://localhost:9999/file/view/67bfc026613ee97ca7511275',
+        
       userList:
        [
        {
@@ -366,6 +397,8 @@ joinDateEnd: '',
         total: 0,
       },
       value1: '',
+      fileList: [],
+      // upLoadURL: upLoadURL,
     }
   },
   name: 'MainComponent',
@@ -374,69 +407,134 @@ joinDateEnd: '',
       // elTable,
     },
     created () {
-      getList().then(res => {
-        console.log(res);
-        this.tableData = res.data.records;
-        this.pageForm.total = res.data.total;
-      });
+      this.queryList ();
       getUserList().then(res => {
         res.data.forEach(item => {
           this.userList.push(item);
         });
-      
-        console.log("this.userList",this.userList);
+
       })
   },
   methods: {
     handleEdit(index, row) {
       this.dialogFormVisible = true
-        console.log(index, row);
         this.form = row;
         this.form.shareList = this.form.share.split(',');
+        if(row.imag!=null && row.imag!=''){
+          for(let i=0;i<row.imag.split(',').length;i++){
+          console.log(i,999999999999999,row.imag.split(',').length);
+          this.fileList.push({name:i, url: row.imag.split(',')[i]});
+        }
+        }
         // console.log(this.form);
       
       },
       handleDelete(index, row) {
-        console.log(index, row);
+        // console.log(index, row);
         deleteBusinessList(row.id).then(res => {
-          console.log(res);
+          // console.log(res);
+          if (res.isSuccess) {
+            this.queryList ();
+          }else {
+            this.$message({
+          showClose: true,
+          message: res.msg,
+          type: 'error'
+        });
+          }
           this.queryList ();
           // this.tableData = res.data;
         });
       },
       queryList() {
-        console.log('submit!');
+        // console.log('submit!');
         getList(this.formInline).then(res => {
-        console.log(res);
+        // console.log("ffffffffffffffffffffffffff");
         this.tableData = res.data.records;
+      for(let i=0;i<this.tableData.length;i++){
+        if(this.tableData[i].imag !=null){
+          this.tableData[i].srcList= this.tableData[i].imag.split(',');
+          this.tableData[i].imag = this.tableData[i].srcList[0];
+        }
+      
+      }
+      // console.log("this.tableData",this.tableData);
         this.pageForm.total = res.data.total;
       });
       },
       handleSizeChange(val) {
-        console.log(`每页 ${val} 条`);
         this.formInline.pageSize = val;
         this.queryList ();
       },
       handleCurrentChange(val) {
-        console.log(`当前页: ${val}`);
         this.formInline.pageNo = val;
         this.queryList ();
       },
       edit() {
-        console.log('edit!', this.form);
-        console.log('edit! data', this.form);
-        console.log(this.form);
         this.form.share = this.form.shareList.join(',');
+        let s=[];
+        this.fileList.forEach(item => {
+            // console.log(item);
+            s.push(item.url);
+          });
+          this.form.imag = s.join(',');
         this.dialogFormVisible = false;
         editBusiness(this.form).then(res => {
-          console.log(res);
-          this.queryList ();
-          // this.tableData = res.data;
+          if (res.isSuccess) {
+            this.queryList ();
+            this.fileList=[];
+          }else {
+            this.$message({
+          showClose: true,
+          message: res.msg,
+          type: 'error'
+        });
+          }
         });
       },
       addHistory(){
         this.$router.push({name: 'AddHistory'});
-      }
+      },
+      handleRemove(file, fileList) {
+        console.log(file, fileList,"remove 1111");
+      this.fileList = fileList;
+       let s= [];
+       console.log(s,"remove 33333");
+       for(let i=0;i<fileList.length;i++){
+        s.push(fileList[i].url);
+       }
+       this.form.imag = s.join(',');
+       console.log(this.form.imag,"remove 22222");
+      },
+      handlePreview(file) {
+        console.log(file);
+        // this.fileList.push(file);
+      },
+      handleExceed(files, fileList) {
+        this.$message.warning(`当前限制选择 3 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`);
+      },
+      beforeRemove(file, fileList) {
+        console.log(file, fileList);
+        return this.$confirm(`确定移除 ${ file.name }？`);
+      },
+      handleSuccess(response, file, fileList) {
+      let obj = {name: file.name, url: response.data};
+      fileList.push(obj);
+      this.fileList.push(obj);
+    },
+    /*
+      上传失败的钩子未被触发
+    */
+    handleError(err, file, fileList) {
+      console.log(err, file, fileList);
+      this.$message({
+          showClose: true,
+          message: '上传失败'+err,
+          type: 'error'
+        });
+    },
+      
+      
   }
 }
 </script>
