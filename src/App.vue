@@ -12,11 +12,10 @@ export default {
     }
   },
   name: 'App',
-    created () {
+  created() {
     this.$router.push('/MyLogin');
   },
-  methods: {
-  }
+  methods: {}
 }
 </script>
 
