@@ -9,16 +9,16 @@
           <el-form-item label="密码">
             <el-input type="password" v-model="form.password" placeholder="请输入密码"></el-input>
           </el-form-item>
-          <el-form-item label="再输入一次密码">
+          <!-- <el-form-item label="再输入一次密码">
             <el-input type="password" v-model="form.repassword" placeholder="请再次输入密码"></el-input>
-          </el-form-item>
+          </el-form-item> -->
           <el-form-item label="电话号">
             <el-input v-model="form.phone" placeholder="请输入电话号"></el-input>
           </el-form-item>
           <el-form-item label="别名">
             <el-input v-model="form.realName" placeholder="请输入别名"></el-input>
           </el-form-item>
-          <el-form-item label="等级" :label-width="formLabelWidth">
+          <el-form-item label="等级" :label-width="formLabelWidth" disabled>
             <el-select v-model="form.levels" placeholder="请选择等级">
               <el-option
                   v-for="item in levelsList"
@@ -30,11 +30,12 @@
           </el-form-item>
           
           <el-form-item>
-            <el-button type="primary" @click="signIn">注册</el-button>
+            <!-- <el-button type="primary" @click="signIn">注册</el-button> -->
             <el-button @click="test">取消</el-button>
           </el-form-item>
         </el-form>
       </el-col>
+    
     </el-row>
   </div>
 </template>
@@ -44,8 +45,8 @@
 // import elInput from 'element-ui/lib/input'
 // import MainComponent from './views/MainComponent.vue'
 import {signIn} from '../api/home';
+import {getNowLoginUser} from '../api/home';
 import {getLevelsList} from '../api/home';
-
 
 export default {
   data() {
@@ -69,17 +70,22 @@ export default {
   },
 
   created() {
-    // this.queryList();
+    getNowLoginUser().then(res => {
+      this.form = res.data;
+    });
     getLevelsList().then(res => {
       res.data.forEach(item => {
         this.levelsList.push(item);
       });
-
     })
+  // 设置默认值为 levelsList 中的第一个选项
+      if (this.levelsList.length > 0) {
+      this.form.levels = this.levelsList[0].code;
+    }
   },
   methods: {
     test() {
-      this.$router.push({name: 'MyLogin'});
+      this.$router.push({name: 'MainComponent'});
     },
 
     async signIn() {

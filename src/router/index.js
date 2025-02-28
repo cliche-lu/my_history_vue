@@ -44,6 +44,12 @@ export default new VueRouter({
                 name: 'UploadTest',
                 component: () => import('@/views/UploadTest.vue') // 确保这个路径是正确的
             }
+            ,
+            {
+                path: '/MyInfo',
+                name: 'MyInfo',
+                component: () => import('@/views/MyInfo.vue') // 确保这个路径是正确的
+            }
         ]
     }
 );

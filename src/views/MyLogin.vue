@@ -65,7 +65,7 @@ export default {
           // 登录失败，显示错误信息
           this.$message({
             showClose: true,
-            message: '用户名或密码错误',
+            message: '用户名或密码错误'+response.msg,
             type: 'error'
           });
         }

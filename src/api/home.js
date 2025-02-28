@@ -49,3 +49,14 @@ export function editBusiness(data = {}) {
 export function fileUpload(data = {}) {
     return http.post("/file/upload?file=" + data, null, null, null);
 }
+
+// /levels/list
+
+export function getLevelsList() {
+    return http.get("/levels/list" , null, null, null);
+}
+
+// /sysUser/getNowLoginUser1
+export function getNowLoginUser() {
+    return http.get("/sysUser/getNowLoginUser1" , null, null, null);
+}

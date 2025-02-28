@@ -3,7 +3,10 @@
   <div>
     <div style="width: 100%; height: 100%;">
       <el-row>
-        <el-col :span="24">
+        <el-col :span="1">
+          <router-link :to="{name:'MyInfo'}"><el-avatar icon="el-icon-user-solid" ></el-avatar></router-link> 
+        </el-col>
+        <el-col :span="23">
           <div class="grid-content bg-purple-dark">
             <el-header>your history</el-header>
           </div>
