@@ -60,3 +60,7 @@ export function getLevelsList() {
 export function getNowLoginUser() {
     return http.get("/sysUser/getNowLoginUser1" , null, null, null);
 }
+// /sysUser/getTenantType
+export function getTenantType() {
+    return http.get("/levels/getTenantType" , null, null, null);
+}

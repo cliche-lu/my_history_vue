@@ -8,7 +8,7 @@
         </el-col>
         <el-col :span="23">
           <div class="grid-content bg-purple-dark">
-            <el-header>your history</el-header>
+            <el-header>Your Footprints</el-header>
           </div>
         </el-col>
       </el-row>
@@ -98,16 +98,16 @@
                 </template>
               </el-table-column>
               <el-table-column
-                  label="图片"
+                  label="图片/棋谱"
                   width="100">
                 <template slot-scope="scope">
                   <i class="el-icon-picture-outline"></i>
-                  <!-- <span style="margin-left: 10%">{{ scope.row.imag }}</span> -->
-                  <el-image
+                  <span style="margin-left: 10%">{{ scope.row.imag }}</span>
+                  <!-- <el-image
                       style="width: 100px; height: 100px"
                       :src="scope.row.imag"
                       :preview-src-list="scope.row.srcList">
-                  </el-image>
+                  </el-image> -->
 
                 </template>
               </el-table-column>
@@ -284,7 +284,7 @@
               :on-exceed="handleExceed"
               :file-list="fileList">
             <el-button size="small" type="primary">点击上传</el-button>
-            <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div>
+            <div slot="tip" class="el-upload__tip">上传文件，且不超过500kb</div>
             <el-input v-model="form.imag" disabled></el-input>
           </el-upload>
 
@@ -343,6 +343,7 @@ import {getList} from '../api/home';
 import {deleteBusinessList} from '../api/home';
 import {editBusiness} from '../api/home';
 import {getUserList} from '../api/home';
+import {isTokenExpired} from '../api/allowToken';
 
 
 export default {
@@ -406,6 +407,7 @@ export default {
     // elTable,
   },
   created() {
+    isTokenExpired();
     this.queryList();
     getUserList().then(res => {
       res.data.forEach(item => {
@@ -517,9 +519,20 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
     handleSuccess(response, file, fileList) {
-      let obj = {name: file.name, url: response.data};
-      fileList.push(obj);
-      this.fileList.push(obj);
+      console.log(response);
+      if (response.isSuccess) {
+        console.log(111111);
+        let obj = {name: file.name, url: response.data};
+        fileList.push(obj);
+        this.fileList.push(obj);
+      }else {
+        console.log(22222);
+        this.$message({
+        showClose: true,
+        message: '上传失败' + response.msg,
+        type: 'error'
+      });
+      }
     },
     /*
       上传失败的钩子未被触发

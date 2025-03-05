@@ -3,6 +3,8 @@ module.exports = defineConfig({
   transpileDependencies: true
 })
 module.exports = {
+    //解决Tomcat下静态文件访问的问题
+    publicPath:"./",
   //...
   devServer: {
     allowedHosts: [

@@ -56,7 +56,10 @@ export default {
             message: '登录成功！',
             type: 'success'
           });
+          const now = new Date().getTime();
+          const tokenExpiry = now + 2*60*60 * 1000; // 计算token过期时间
           window.localStorage.setItem("token", response.data);
+          window.localStorage.setItem("tokenExpiry", tokenExpiry);
 
           this.$router.push({path: '/MainComponent'});
           // this.$router.replace({ path: '/' });

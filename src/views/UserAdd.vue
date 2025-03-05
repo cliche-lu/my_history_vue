@@ -15,16 +15,30 @@
           <el-form-item label="电话号">
             <el-input v-model="form.phone" placeholder="请输入电话号"></el-input>
           </el-form-item>
-          <el-form-item label="别名">
+          <el-form-item label="别名"  v-show="!levelsAble">
             <el-input v-model="form.realName" placeholder="请输入别名"></el-input>
           </el-form-item>
-          <el-form-item label="等级" :label-width="formLabelWidth">
+          <el-form-item label="野狐名称" v-show="levelsAble">
+            <el-input v-model="form.realName" placeholder="请输入野狐名称"></el-input>
+          </el-form-item>
+          <el-form-item label="等级" :label-width="formLabelWidth" v-show="levelsAble">
             <el-select v-model="form.levels" placeholder="请选择等级">
               <el-option
                   v-for="item in levelsList"
                   :key="item.code"
                   :label="item.msg"
                   :value="item.code">
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item label="用户类型" :label-width="formLabelWidth">
+            <el-select v-model="form.tenantId" placeholder="请选择租户类型" @change="change">
+              <el-option
+                  v-for="item in tenantList"
+                  :key="item.id"
+                  :label="item.tenantName"
+                  :value="item.tenantId">
               </el-option>
             </el-select>
           </el-form-item>
@@ -45,6 +59,7 @@
 // import MainComponent from './views/MainComponent.vue'
 import {signIn} from '../api/home';
 import {getLevelsList} from '../api/home';
+import {getTenantType} from '../api/home';
 
 
 export default {
@@ -56,9 +71,12 @@ export default {
         repassword: '',
         phone: '',
         realName: '',
-        levels: ''
+        tenantId: '',
+        levels: '7'
       },
+      levelsAble: false,
       levelsList :[],
+      tenantList :[],
       formLabelWidth: '120px',
     }
   },
@@ -73,6 +91,12 @@ export default {
     getLevelsList().then(res => {
       res.data.forEach(item => {
         this.levelsList.push(item);
+      });
+
+    })
+    getTenantType().then(res => {
+      res.data.forEach(item => {
+        this.tenantList.push(item);
       });
 
     })
@@ -146,8 +170,20 @@ export default {
         });
         return false;
       }
+      if (this.form.tenantId === '') {
+        this.$message({
+          showClose: true,
+          message: '租户不能为空',
+          type: 'error'
+        });
+        return false;
+      }
     
       return true;
+    },
+
+    change(value) {
+      this.levelsAble = value === 3;
     }
   }
 }

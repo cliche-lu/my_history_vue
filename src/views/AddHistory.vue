@@ -5,6 +5,16 @@
       <el-form-item label="描述">
         <el-input v-model="form.remark"></el-input>
       </el-form-item>
+      <el-form-item label="类型">
+        <el-select v-model="form.dataType" placeholder="请选择类型" @change="change">
+        <el-option
+        v-for="item in options"
+          :key="item.value"
+         :label="item.label"
+          :value="item.value">
+          </el-option>
+        </el-select>
+      </el-form-item>
       <el-form-item label="图片">
         <el-upload
             class="upload-demo"
@@ -13,6 +23,7 @@
             :on-remove="handleRemove"
             :before-remove="beforeRemove"
             :on-success="handleSuccess"
+            :on-error="handleError"
             multiple
             :limit="9"
             :on-exceed="handleExceed"
@@ -26,11 +37,22 @@
       <el-form-item label="地址">
         <el-input v-model="form.address" placeholder="请再次输入密码"></el-input>
       </el-form-item>
-      <el-form-item label="同行人">
-        <el-input v-model="form.users" placeholder="请输入电话号"></el-input>
+      <el-form-item label="同行人"  v-show="!useAble">
+        <el-input v-model="form.users" placeholder="请输同行人"></el-input>
+      </el-form-item>
+
+      <el-form-item label="对手" v-show="useAble" >
+        <el-select v-model="form.users" placeholder="请选择对手类型">
+              <el-option
+                  v-for="item in userList"
+                  :key="item.id"
+                  :label="item.realName"
+                  :value="item.username">
+              </el-option>
+            </el-select>
       </el-form-item>
       <el-form-item label="其他">
-        <el-input v-model="form.others" placeholder="请输入别名"></el-input>
+        <el-input v-model="form.others" placeholder="请输入其他"></el-input>
       </el-form-item>
       <el-form-item label="谁可以看到" :label-width="formLabelWidth">
         <el-select v-model="form.shareList" multiple placeholder="请选择谁可以看到">
@@ -43,14 +65,26 @@
         </el-select>
       </el-form-item>
       <el-form-item label="开始时间">
-        <el-input v-model="form.joinDateStart" placeholder="请输入别名"></el-input>
+        <!-- <el-input v-model="form.joinDateStart" placeholder="请输入别名"></el-input> -->
+        <!-- <span class="demonstration">默认</span> -->
+    <el-date-picker
+      v-model="form.joinDateStart"
+      type="datetime"
+      placeholder="选择日期时间">
+    </el-date-picker>
+
       </el-form-item>
       <el-form-item label="结束时间">
-        <el-input v-model="form.joinDateEnd" placeholder="请输入别名"></el-input>
+        <!-- <el-input v-model="form.joinDateEnd" placeholder="请输入别名"></el-input> -->
+        <el-date-picker
+      v-model="form.joinDateEnd"
+      type="datetime"
+      placeholder="选择日期时间">
+    </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="addBusinessListClick">新增</el-button>
-        <el-button type="primary" @click="test">测试</el-button>
+        <!-- <el-button type="primary" @click="test">测试</el-button> -->
         <el-button @click="returnMain">取消</el-button>
       </el-form-item>
     </el-form>
@@ -72,12 +106,12 @@ export default {
     return {
       form: {
         id: '', // id
-        remark: 'Some remark', // 描述
-        imag: 'image.jpg', // 图片
-        address: 'Some address', // 地址
-        users: 'User1,', // 同行人
-        others: 'Some other', // 其他
-        shareList: 'Share to',// 分享范围
+        remark: '', // 描述
+        imag: '', // 图片
+        address: '', // 地址
+        users: '', // 同行人
+        others: '', // 其他
+        shareList: '',// 分享范围
         share: 'all', // 分享范围
         joinDateStart: '',
         joinDateEnd: '',
@@ -96,6 +130,15 @@ export default {
       // fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}]
       fileList: [],
       upLoadURL: upLoadURL,
+      options: [{
+          value: '1',
+          label: '棋谱'
+        }, {
+          value: '2',
+          label: '其他'
+        }
+      ],
+      useAble: false,
     }
   },
   name: 'addHistory',
@@ -186,13 +229,41 @@ export default {
       return this.$confirm(`确定移除 ${file.name}？`);
     },
     handleSuccess(response, file, fileList) {
-      // console.log("666666666666666",response,file,fileList); // 后端返回的数据
-      fileList.forEach(item => {
-        console.log(item);
+      // console.log(response);
+      if (response.isSuccess) {
         let obj = {name: file.name, url: response.data};
+        fileList.push(obj);
         this.fileList.push(obj);
+      }else {
+        this.$message({
+        showClose: true,
+        message: '上传失败' + response.msg,
+        type: 'error'
       });
-      // console.log("7777777777777",this.fileList); // 后端返回的数据
+      }
+    },
+    change(value) {
+      console.log(value); // 打印当前选中的值
+      this.useAble = value === '1';
+      if(value === '1') {
+        this.userList = this.userList.filter(item => item.username !== 'all');
+        this.form.users = '';
+      } else {
+        this.userList.push({id: '0',username: 'all', nickname: '全部'});
+      }
+      
+    },
+
+    /*
+      上传失败的钩子未被触发
+    */
+    handleError(err, file, fileList) {
+      console.log(err, file, fileList,6666666666);
+      // this.$message({
+      //   showClose: true,
+      //   message: '上传失败' + err,
+      //   type: 'error'
+      // });
     },
 
   }
