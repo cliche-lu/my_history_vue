@@ -6,10 +6,13 @@
         <el-col :span="1">
           <router-link :to="{name:'MyInfo'}"><el-avatar icon="el-icon-user-solid" ></el-avatar></router-link> 
         </el-col>
-        <el-col :span="23">
+        <el-col :span="22">
           <div class="grid-content bg-purple-dark">
             <el-header>Your Footprints</el-header>
           </div>
+        </el-col>
+        <el-col :span="1">
+          <span style="float: right;" @click="logout"> 登出</span>
         </el-col>
       </el-row>
       <el-row>
@@ -533,6 +536,11 @@ export default {
         type: 'error'
       });
       }
+    },
+    logout(){
+      window.localStorage.removeItem("token");
+      window.localStorage.removeItem("tokenExpiry");
+      this.$router.push({name: 'MyLogin'});
     },
     /*
       上传失败的钩子未被触发

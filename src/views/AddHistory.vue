@@ -251,7 +251,6 @@ export default {
       } else {
         this.userList.push({id: '0',username: 'all', nickname: '全部'});
       }
-      
     },
 
     /*
