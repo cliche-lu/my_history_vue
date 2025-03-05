@@ -9,7 +9,8 @@ import router from "@/router";
 const service = axios.create({
     // 这里可以放一下公用属性等。
     // baseURL: process.env.VUE_APP_BASE_API, // 使用环境变量
-    baseURL: "http://127.0.0.1:9999", // 用于配置请求接口公用部分，请求时会自动拼接在你定义的url前面。
+    // baseURL: "http://127.0.0.1:9999", // 用于配置请求接口公用部分，请求时会自动拼接在你定义的url前面。
+    baseURL: "http://wn7107sv6078.vicp.fun", // 用于配置请求接口公用部分，请求时会自动拼接在你定义的url前面。
     // upLoadURL: "http://192.168.1.108:9999/file/upload", // 用于配置请求接口公用部分，请求时会自动拼接在你定义的url前面。
 
     withCredentials: false, // 跨域请求时是否需要访问凭证
