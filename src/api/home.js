@@ -58,7 +58,11 @@ export function getLevelsList() {
 
 // /sysUser/getNowLoginUser1
 export function getNowLoginUser() {
-    return http.get("/sysUser/getNowLoginUser1" , null, null, null);
+    return http.get("/sysUser/getNowLoginUser" , null, null, null);
+}
+
+export function updateUser(data = {}) {
+    return http.post("/sysUser/update" , data, null, null);
 }
 // /sysUser/getTenantType
 export function getTenantType() {

@@ -4,14 +4,15 @@
       <el-col :span="6" :offset="8">
         <el-form ref="form" :model="form" label-width="80px">
           <el-form-item label="用户名">
-            <el-input v-model="form.username"></el-input>
+            <el-input v-model="form.username" disabled></el-input>
           </el-form-item>
-          <el-form-item label="密码">
-            <el-input type="password" v-model="form.password" placeholder="请输入密码"></el-input>
+          <button v-show="isUserPass" @click="changeIsUserPass">修改密码</button>
+          <el-form-item label="密码"  v-show="!isUserPass">
+            <el-input type="password" v-model="form.password" placeholder="请输入密码" :disabled=isUserPass></el-input> 
           </el-form-item>
-          <!-- <el-form-item label="再输入一次密码">
+          <el-form-item label="再输入一次密码" v-show="!isUserPass">
             <el-input type="password" v-model="form.repassword" placeholder="请再次输入密码"></el-input>
-          </el-form-item> -->
+          </el-form-item>
           <el-form-item label="电话号">
             <el-input v-model="form.phone" placeholder="请输入电话号"></el-input>
           </el-form-item>
@@ -30,7 +31,7 @@
           </el-form-item>
           
           <el-form-item>
-            <!-- <el-button type="primary" @click="signIn">注册</el-button> -->
+            <el-button type="primary" @click="changeInfo">修改</el-button>
             <el-button @click="test">取消</el-button>
           </el-form-item>
         </el-form>
@@ -41,12 +42,10 @@
 </template>
 
 <script>
-// import axios from 'axios'
-// import elInput from 'element-ui/lib/input'
-// import MainComponent from './views/MainComponent.vue'
-import {signIn} from '../api/home';
+
 import {getNowLoginUser} from '../api/home';
 import {getLevelsList} from '../api/home';
+import {updateUser} from '../api/home';
 
 export default {
   data() {
@@ -59,6 +58,7 @@ export default {
         realName: '',
         levels: ''
       },
+      isUserPass: true,
       levelsList :[],
       formLabelWidth: '120px',
     }
@@ -79,7 +79,7 @@ export default {
       });
     })
   // 设置默认值为 levelsList 中的第一个选项
-      if (this.levelsList.length > 0) {
+      if (this.levelsList.length > 0 && this.form.levels === '') {
       this.form.levels = this.levelsList[0].code;
     }
   },
@@ -87,14 +87,17 @@ export default {
     test() {
       this.$router.push({name: 'MainComponent'});
     },
+    changeIsUserPass(){
+      this.isUserPass = !this.isUserPass;
+      this.form.password = '';
+    },
 
-    async signIn() {
+    async changeInfo() {
       if (!this.checkData()) {
         return;
       }
       try {
-
-        const response = await signIn(this.form);
+        const response = await updateUser(this.form);
         console.log(response); // 打印响应数据
         if (response.isSuccess) {
           // 登录成功，跳转到主页或其他页面
@@ -136,7 +139,7 @@ export default {
         });
         return false;
       }
-      if (this.form.repassword === '') {
+      if (!this.isUserPass && this.form.repassword === '') {
         this.$message({
           showClose: true,
           message: '请再次输入密码',
@@ -144,7 +147,7 @@ export default {
         });
         return false;
       }
-      if (this.form.password !== this.form.repassword) {
+      if (!this.isUserPass &&  this.form.password !== this.form.repassword) {
         this.$message({
           showClose: true,
           message: '两次密码输入不一致',
