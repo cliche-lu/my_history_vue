@@ -105,7 +105,8 @@
                   width="100">
                 <template slot-scope="scope">
                   <i class="el-icon-picture-outline"></i>
-                  <span style="margin-left: 10%">{{ scope.row.imag }}</span>
+                  <!-- <span style="margin-left: 10%">{{ scope.row.imag }}</span> -->
+                  <a :href="scope.row.imag" target="_blank">{{ scope.row.imag }}</a>
                   <!-- <el-image
                       style="width: 100px; height: 100px"
                       :src="scope.row.imag"
@@ -254,6 +255,7 @@
           <div>
 
             Powered by <a href="https://github.com/cliche-lu/new-test.git">cliche-lu</a>
+            参考项目：<a href="https://github.com/waylau/mongodb-file-server.git">文件服务器相关内容</a>
 
           </div>
         </el-footer>

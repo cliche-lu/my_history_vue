@@ -1,11 +1,11 @@
 <template>
   <div id="login">
     <el-col
-        :span="4"
-        :offset="10"
+        :span="8"
+        :offset="8"
     >
       <div style="margin-top: 50%;">
-        <el-row>
+        <el-row :span="24">
           <el-input v-model="username" placeholder="请输入用户名"></el-input>
           <el-input placeholder="请输入密码" v-model="password" show-password></el-input>
           <button @click="login">登录</button>

@@ -1,22 +1,23 @@
 <template>
   <div id="userAdd">
-    <el-row>
-      <el-col :span="6" :offset="8">
-        <el-form ref="form" :model="form" label-width="80px">
-          <el-form-item label="用户名">
+    <div>
+      <el-row>
+      <el-col :span="20" :offset="1">
+        <el-form ref="form" :model="form" label-width="100%">
+          <el-form-item label="用户名" :label-width="formLabelWidth">
             <el-input v-model="form.username" disabled></el-input>
           </el-form-item>
           <button v-show="isUserPass" @click="changeIsUserPass">修改密码</button>
           <el-form-item label="密码"  v-show="!isUserPass">
             <el-input type="password" v-model="form.password" placeholder="请输入密码" :disabled=isUserPass></el-input> 
           </el-form-item>
-          <el-form-item label="再输入一次密码" v-show="!isUserPass">
+          <el-form-item label="再输入一次密码" v-show="!isUserPass" :label-width="formLabelWidth">
             <el-input type="password" v-model="form.repassword" placeholder="请再次输入密码"></el-input>
           </el-form-item>
-          <el-form-item label="电话号">
+          <el-form-item label="电话号" :label-width="formLabelWidth">
             <el-input v-model="form.phone" placeholder="请输入电话号"></el-input>
           </el-form-item>
-          <el-form-item label="别名">
+          <el-form-item label="别名"  :label-width="formLabelWidth" >
             <el-input v-model="form.realName" placeholder="请输入别名"></el-input>
           </el-form-item>
           <el-form-item label="等级" :label-width="formLabelWidth" disabled>
@@ -30,7 +31,7 @@
             </el-select>
           </el-form-item>
           
-          <el-form-item>
+          <el-form-item :label-width="formLabelWidth">
             <el-button type="primary" @click="changeInfo">修改</el-button>
             <el-button @click="test">取消</el-button>
           </el-form-item>
@@ -38,6 +39,8 @@
       </el-col>
     
     </el-row>
+    </div>
+    
   </div>
 </template>
 
